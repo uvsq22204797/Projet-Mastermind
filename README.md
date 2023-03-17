@@ -6,6 +6,8 @@ KHIDER Sarah
 
 ANDREUCCI Elise
 
+MEDENECHE Sarah
+
 ## URL de dépot du projet 
 https://github.com/uvsq22204797/Projet-Mastermind.git
 
