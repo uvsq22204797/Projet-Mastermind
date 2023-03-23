@@ -19,7 +19,31 @@ def verification(essai, code_bon):
             bonne_place+=1
         elif essai[i] in code_bon:
             mauvaise_place+=1
+            
     return bonne_place, mauvaise_place
+
+
+
+# Fonction qui génère le code aléatoire pour le mode 1 joueur
+
+def code_aleatoire():
+    couleurs = ["bleu", "vert", "jaune", "orange", "jaune", "marron"]
+    code_alea = ""
+    
+    for i in range(4):
+        code_alea += (random.choice(couleurs)+" ")
+        
+    return code_alea
+#(code_aleatoire())
+
+
+
+
+
+
+#code_joueur1=input("Choissisez 4 couleurs parmi les suivantes en respectant la syntaxe: bleu, vert, jaune, orange, jaune, marron")
+
+
 
 
 
