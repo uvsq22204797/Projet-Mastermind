@@ -1,6 +1,6 @@
 import tkinter as tk
 import random
-from tkinter import Label, Radiobutton, Button, StringVar
+from tkinter import Label, Button
 from tkinter import BOTH, X, Y
 import tkinter.font as font
 
