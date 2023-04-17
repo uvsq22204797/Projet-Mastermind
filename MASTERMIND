@@ -1,15 +1,19 @@
 import tkinter as tk
 import random
+from tkinter import BOTH, X, Y
+import tkinter.font as font
 
 racine=tk.Tk()
 racine.title("MASTERMIND")
+racine.geometry('800x800')
+racine.config(bg='peachpuff')
 
 
-# Couleurs possibles pour les pions
+"""Couleurs possibles pour les pions"""
 couleurs = ["bleu", "vert", "jaune", "orange", "jaune", "marron"]
 
 
-# Fonction pour vérifier la combinaison proposée par le joueur
+"""Fonction pour vérifier la combinaison proposée par le joueur"""
 def verification(essai, code_bon):
     bonne_place = 0
     mauvaise_place = 0
@@ -23,9 +27,7 @@ def verification(essai, code_bon):
     return bonne_place, mauvaise_place
 
 
-
-# Fonction qui génère le code aléatoire pour le mode 1 joueur
-
+"""Fonction qui génère le code aléatoire pour le mode 1 joueur"""
 def code_aleatoire():
     couleurs = ["bleu", "vert", "jaune", "orange", "jaune", "marron"]
     code_alea = ""
@@ -34,18 +36,36 @@ def code_aleatoire():
         code_alea += (random.choice(couleurs)+" ")
         
     return code_alea
-#(code_aleatoire())
+
+
+"""Définition des styles: type de la police, taille et gras"""
+style_A = font.Font(family='Times New Roman', size=40, weight="bold")
+style_B= font.Font(family='Times New Roman', size=30, weight="bold")
+style_C= font.Font(family='Times New Roman', size=20, weight="bold")
+
+
+"""Définition du texte et des boutons"""
+bienvenue = Label(racine, text='Bienvenue dans le jeu MASTERMIND', bg= 'coral', font=style_A).pack(fill=X)
+accueil = Label(racine, text='Choisissez un mode de jeu', bg = 'lightsalmon', font=style_B).pack(fill=Y)
+bouton_1_joueur = Button(racine, text='1 joueur', bg = 'pink', fg ='black', command = lambda: mode_1_joueur, font=style_C)
+bouton_2_joueurs = Button(racine, text='2 joueurs', bg = 'pink', fg ='black', command = lambda: mode_2_joueurs, font=style_C)
+bouton_1_joueur.pack()
+bouton_2_joueurs.pack()
 
 
 
+"""Commandes des boutons"""
+def mode_1_joueur():  
+    racine.configure(bg='white')
+    command = bouton_1_joueur.destroy()
+    command = bouton_2_joueurs.destroy()
+    
+def mode_2_joueurs():
+    racine.config(bg='grey')
+    command = bouton_1_joueur.destroy()
+    command = bouton_2_joueurs.destroy()
+    
+    
 
-
-
-#code_joueur1=input("Choissisez 4 couleurs parmi les suivantes en respectant la syntaxe: bleu, vert, jaune, orange, jaune, marron")
-
-
-
-
-
-
+    
 racine.mainloop()
