@@ -67,3 +67,172 @@ def userInAction():
     CANVAS.unbind("<Up>")
     CANVAS.unbind("<Down>")
     CANVAS.unbind("<Return>")
+    
+# Pour commencer la partie
+def initGame(board, response):
+    global row, cpos, colorpicks, codedColor, NB_PLAYER
+    CANVAS.itemconfig(board[row][cpos],width=1)
+    userAction()
+    if NB_PLAYER == 1:
+        codedColor = create_code_one_player()
+    initRow()
+ # Selectionner un pion     
+def select(colorPosition):
+    CANVAS.itemconfig(colorPosition, width=5)
+# Déselectionner un pion
+def deselect(colorPosition):
+    CANVAS.itemconfig(colorPosition, width=0)
+
+# Changer la couleur du pion
+def setcolor(colorPosition,color):
+    CANVAS.itemconfig(colorPosition, fill=color)
+
+# Position du pion
+def selectPos(increment):
+    global cpos
+    CANVAS.itemconfig(board[row][cpos],width=0)
+    cpos += increment
+    if cpos < 0:
+        cpos = NOMBRE_PIONS-1
+    if cpos >= NOMBRE_PIONS:
+        cpos = 0
+    CANVAS.itemconfig(board[row][cpos],width=1)
+
+# Passer d'un pion à un autre pion
+def switchColor(increment):
+    colorpicks[row][cpos] += increment
+    if colorpicks[row][cpos] > len(basecolors)-1:
+        colorpicks[row][cpos] = 0
+    if colorpicks[row][cpos] < 0:
+        colorpicks[row][cpos] = len(basecolors)-1
+    CANVAS.itemconfig(board[row][cpos], fill=basecolors[colorpicks[row][cpos]])
+
+# Fonction qui vérifie si la combinaison semblable à celle qui doit ètre trouvé
+def switchrow():
+    global row, tops, bots, colorpicks, codedColor, indice
+    tops, bots = 0, 0
+    if NB_ESSAIS == 1:
+            codedColor = colorpicks.copy()[0]
+            colorpicks[0] = [-1 for i in range(NOMBRE_PIONS)]
+            FRAME.destroy()
+            select_un_joueur()
+            return
+    utilise = []
+    compteur = 0
+    for i in range(NOMBRE_PIONS):
+        if colorpicks[row][i] == -1:
+            print(f"Colors not set {row},{i}:")
+            return False
+        if (codedColor[i]==colorpicks[row][i]): #bien placé
+            indice[row][compteur] = 0
+            compteur += 1
+            tops += 1
+            utilise.append(i)
+    for i in range(NOMBRE_PIONS):
+        for j in range(NOMBRE_PIONS):
+            if (j!=i and codedColor[j]==colorpicks[row][i] and j not in utilise):
+                indice[row][compteur] = 1
+                compteur += 1
+                bots += 1
+                utilise.append(j)
+                break
+        
+    if tops < NOMBRE_PIONS and row < NB_ESSAIS-2:
+        print(f"tops:{tops}, bots:{bots}")
+        for i in range(tops):
+            CANVAS.itemconfig(response[row][i], fill="red")
+        for i in range(bots):
+            CANVAS.itemconfig(response[row][i+tops], fill="white")
+        CANVAS.itemconfig(board[row][cpos],width=0)
+        row += 1
+        CANVAS.itemconfig(board[row][cpos],width=1)
+        initRow()
+        return False
+    else:
+        print(f"Row{row} tops{tops} and bots{bots}")
+        print(response, codedColor, colorpicks)
+        output = True
+        if row == NB_ESSAIS-2:
+            output = False
+        for i in range(tops):
+            print(row, i)
+            CANVAS.itemconfig(response[row][i], fill="red")
+        for i in range(NOMBRE_PIONS):
+            CANVAS.itemconfig(board[NB_ESSAIS-1][i], fill=basecolors[codedColor[i]])
+        userInAction()
+        CANVAS.bind("<space>", lambda _: initGame(board, response))
+        return output
+
+# Fenètre et canvas du mode 1 joueur
+def drawBoard():
+    global colorpicks, indice
+    print(indice)
+    board = []
+    response = []
+    button_annuler = tk.Button(FRAME, text="Annuler", command=annuler, bg='#9FA4A1', fg="black")
+    button_sauvegarde = tk.Button(FRAME, text="Sauvegarder", command=sauvegarder, bg='#9FA4A1', fg="black")
+    button_annuler.place(x=10, y=10)
+    button_sauvegarde.place(x=100, y=10)
+    for i in range(NB_ESSAIS):
+        newRow = []
+        newResponse = []
+        for j in range(NOMBRE_PIONS):
+            x = COULEUR_PAD*j+5
+            y = HEIGHT - COULEUR_PAD*i - TAILLE_COULEUR - 5
+            if colorpicks[i][j] == -1:
+                newRow.append(CANVAS.create_oval(x,y,x+TAILLE_COULEUR,y+TAILLE_COULEUR,fill='#9FA4A1',outline='black',width=0))
+            else:
+                print(basecolors[colorpicks[i][j]])
+                newRow.append(CANVAS.create_oval(x,y,x+TAILLE_COULEUR,y+TAILLE_COULEUR,fill=basecolors[colorpicks[i][j]],outline='black',width=0))
+            if i < NB_ESSAIS-1:
+                x = COULEUR_PAD/2*j+NOMBRE_PIONS*COULEUR_PAD+20
+                y += TAILLE_COULEUR/8
+                if indice[i][j] == -1:
+                    newResponse.append(CANVAS.create_oval(x+ TAILLE_COULEUR/4, y+ TAILLE_COULEUR/4, x + TAILLE_COULEUR/2, y + TAILLE_COULEUR/2, fill='#9FA4A1', outline='grey', width=0))
+                else:
+                    newResponse.append(CANVAS.create_oval(x+ TAILLE_COULEUR/4, y+ TAILLE_COULEUR/4, x + TAILLE_COULEUR/2, y + TAILLE_COULEUR/2, fill=color_indice[indice[i][j]], outline='grey', width=0))
+        board.append(newRow)
+        if i < NB_ESSAIS - 1:
+            response.append(newResponse)
+    initGame(board, response)
+    CANVAS.itemconfig(board[row][cpos],width=1)
+    return board, response
+
+# Retour en arrière dans la partie
+def annuler():
+    global board, response, row, CANVAS, colorpicks, indice
+    if row == 0:
+        return
+    for i in range(NOMBRE_PIONS):
+        CANVAS.itemconfig(board[row][i], fill='#9FA4A1', width=0)
+        CANVAS.itemconfig(response[row][i], fill='#9FA4A1')
+        colorpicks[row][i] = -1
+        indice[row][i] = -1
+    row -= 1
+    for i in range(NOMBRE_PIONS):
+        CANVAS.itemconfig(board[row][i], fill='#9FA4A1')
+        CANVAS.itemconfig(response[row][i], fill='#9FA4A1')
+        colorpicks[row][i] = -1
+        indice[row][i] = -1
+    
+# Charger la partie        
+def charger():
+    global colorpicks, codedColor, indice, row
+    with open(CHEMIN, 'r') as f:
+        data = json.load(f)
+        colorpicks = data['sequence_couleur']
+        codedColor = data['resultat']
+        indice = data['indice']
+        row = data['row']
+    select_un_joueur()
+    
+# sauvegarder la partie
+def sauvegarder():
+    global colorpicks, codedColor, indice, row
+    data = {}
+    with open(CHEMIN, 'w') as f:
+        data['sequence_couleur'] = colorpicks
+        data["resultat"] = codedColor
+        data["indice"] = indice
+        data["row"] = row
+        json.dump(data, f)
