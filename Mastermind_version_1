@@ -1,0 +1,69 @@
+#########################################
+# Groupe BI TD 2
+# KHIDER Sarah
+# MEDENECHE Sarah
+# ANDREUCCI Elise
+# https://github.com/uvsq22204797/Projet-Mastermind
+#########################################
+
+#les libraires pour le projet
+import tkinter as tk
+import json
+import random
+
+
+# Dimensions des Constantes
+CHEMIN = "data.json"
+NB_ESSAIS = 11
+NOMBRE = NB_ESSAIS
+TAILLE_COULEUR = 33
+NOMBRE_PIONS = 4
+COULEUR_PAD = 50
+WIDTH = NOMBRE_PIONS*90
+HEIGHT = NB_ESSAIS*55+70
+NB_PLAYER = 1
+CODED_MESSAGE = []
+
+# Listes
+basecolors = ['white','green','red','maroon1','gold','dark orange','dodger blue']
+color_indice = ['red','white']
+selectColors = []
+colorpicks = [[-1 for i in range(NOMBRE_PIONS)] for j in range(NB_ESSAIS)]
+indice = [[-1 for i in range(NOMBRE_PIONS)] for j in range(NB_ESSAIS)]
+position = 0
+cpos = 0
+row = 0
+
+# Lancer fenêtre de jeu pour un joueur
+def create_code_one_player():
+    selection = [x for x in range(len(basecolors))]
+    code = []
+    for _ in range(NOMBRE_PIONS):
+        codeIndex = random.randint(0,len(selection)-1)
+        code.append(selection[codeIndex])
+        selection.pop(codeIndex)
+    return code
+
+# Lancer fenêtre de jeu pour deux joueurs
+def initRow():
+    global selectColors,tops, bots
+    selectColors = [x for x in range(len(basecolors))]
+    tops = 0
+    bots = 0
+
+# Les touches sont attribués à des paramètres
+def userAction():
+    CANVAS.unbind('<space>')
+    CANVAS.bind('<Left>', lambda _: selectPos(-1))
+    CANVAS.bind('<Right>', lambda _: selectPos(1))
+    CANVAS.bind('<Up>', lambda _: switchColor(1))
+    CANVAS.bind('<Down>', lambda _: switchColor(-1))
+    CANVAS.bind('<Return>', lambda _: switchrow())
+
+# Les touches sont rendues innactives
+def userInAction():
+    CANVAS.unbind("<Left>")
+    CANVAS.unbind("<Right>")
+    CANVAS.unbind("<Up>")
+    CANVAS.unbind("<Down>")
+    CANVAS.unbind("<Return>")
